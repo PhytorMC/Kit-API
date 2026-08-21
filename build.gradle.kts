@@ -49,4 +49,21 @@ publishing {
             from(components["java"])
         }
     }
+
+    repositories {
+        // Internal artifacts publish to Reposilite on the game node, so other
+        // repos resolve them without a developer having run publishToMavenLocal
+        // first. Reposilite refuses to overwrite a released version, so a
+        // coordinate identifies exactly one build. URL is loopback — publish
+        // over the SSH forward.
+        maven {
+            name = "phytor"
+            url = uri((project.findProperty("phytorMavenUrl") as String?) ?: "http://127.0.0.1:8081/releases")
+            isAllowInsecureProtocol = true
+            credentials {
+                username = project.findProperty("phytorMavenUser") as String?
+                password = project.findProperty("phytorMavenPassword") as String?
+            }
+        }
+    }
 }
